@@ -19,10 +19,10 @@ Assume the table name is `h2olog.quic`:
 
 ```console
 # find by xid
-h2olog-quic-trace h2olog.quic --xid 123456 > log.jsonl
+$ h2olog-quic-trace h2olog.quic --xid 123456 > log.jsonl
 
 # find by quicly connection id
-h2olog-quic-trace h2olog.quic --conn 123456 > log.jsonl
+$ h2olog-quic-trace h2olog.quic --conn 123456 > log.jsonl
 ```
 
 ### Transform `.jsonl` into QTR JSON files
@@ -43,7 +43,6 @@ $ $QUIC_TRACE/bazel-bin/tools/render/render_trace qtr/2020-04-20T13:24:49Z-25019
 where `$QUIC_TRACE` is the `google/quic-trace` repository path.
 
 Then, you'll see a QUIC trace viewer like this:
-
 
 ![](./quic-trace-viewer.png)
 
