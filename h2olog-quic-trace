@@ -1,32 +1,62 @@
 #!/usr/bin/env python3
-# A utility to fetch quic-trace data from BigQuery table
 
 import os
 import json
 import sys
+import argparse
 from google.cloud import bigquery
+
+usage = r"""
+usage:
+  {prog} table_name --xid xid
+  {prog} table_name --conn quicly-connection-id
+""".format(prog=sys.argv[0])
+
+
+def parse_args():
+    parser = argparse.ArgumentParser(
+        description='A utility to fetch quic-trace data from BigQuery table.')
+    parser.add_argument('table_name', type=str, help='a BigQuery table name')
+    parser.add_argument('--xid', type=int, help='An XID response header value')
+    parser.add_argument('--conn', type=int, help='A quicly connection id')
+
+    return parser.parse_args()
 
 
 def main():
-    try:
-        (_, table_name, xid) = sys.argv
-    except:
-        print("usage: %s table_name xid" % sys.argv[0])
+    if len(sys.argv) <= 2:
+        print(usage)
         sys.exit(1)
+
+    args = parse_args()
+
+    if not (args.xid or args.conn) or (args.xid and args.conn):
+        print(usage)
+        sys.exit(1)
+
+    if args.xid:
+        where = r"""
+            (conn in (
+                select conn
+                from `{table_name}`
+                where type = "send-response-header" and name = "xid" and value = "{xid}"
+            ))
+        """.format(xid=args.xid)
+
+    if args.conn:
+        where = r"""
+            (conn = {conn})
+        """.format(conn=args.conn)
 
     query = r"""
 select *, unix_millis(time) as time_ms
   from `{table_name}`
-  where conn in (
-    select conn
-    from `{table_name}`
-    where type = "send-response-header" and name = "xid" and value = "{xid}"
-  )
+  where {where}
   order by time asc;
-  """.format(table_name=table_name, xid=xid)
+  """.format(table_name=table_name, where=where)
 
-    print("Extractiong xid = {xid} from {table_name} ...".format(
-        table_name=table_name, xid=xid), file=sys.stderr)
+    print("Extracting from {table_name} ...".format(
+        table_name=table_name), file=sys.stderr)
 
     os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "./authn.json"
     client = bigquery.Client()

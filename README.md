@@ -18,7 +18,11 @@ A utility to prepare log data for `google/quic-trace`.
 Assume the table name is `h2olog.quic`:
 
 ```console
-h2olog-quic-trace h2olog.quic ... > log.jsonl
+# find by xid
+h2olog-quic-trace h2olog.quic --xid 123456 > log.jsonl
+
+# find by quicly connection id
+h2olog-quic-trace h2olog.quic --conn 123456 > log.jsonl
 ```
 
 ### Transform `.jsonl` into QTR JSON files
