@@ -6,23 +6,23 @@ A utility to prepare log data for `google/quic-trace`.
 
 * Python 3.5 or later
   * and its dependencies: `pip3 install -r requirements.txt`
-* BigQuery authentication file named `authn.json`
+* A BigQuery authentication file named `authn.json`
   * See https://cloud.google.com/bigquery/docs/reference/libraries to setup authentication
-* BigQuery table managed by `h2olog-collector`
+* A BigQuery table managed by `h2olog-collector`
   * See https://github.com/gfx/h2olog-collector for details
 
 ## Usage
 
 ### Fetch a specific set of logs from BigQuery
 
-Assume the table name is `h2olog.quic`:
+Assumed that there is a BigQuery table named `h2olog.quic`:
 
 ```console
 # find by xid
-$ h2olog-quic-trace h2olog.quic --xid 123456 > log.jsonl
+$ h2olog-quic-trace 'h2olog.quic' --xid 123456 > log.jsonl
 
 # find by quicly connection id
-$ h2olog-quic-trace h2olog.quic --conn 123456 > log.jsonl
+$ h2olog-quic-trace 'h2olog.quic' --conn 123456 > log.jsonl
 ```
 
 ### Transform `.jsonl` into QTR JSON files
@@ -42,7 +42,7 @@ $ $QUIC_TRACE/bazel-bin/tools/render/render_trace qtr/2020-04-20T13:24:49Z-25019
 
 where `$QUIC_TRACE` is the `google/quic-trace` repository path.
 
-Then, you'll see a QUIC trace viewer like this:
+Then, you'll see a QUIC trace viewer launched like this:
 
 ![](./quic-trace-viewer.png)
 
